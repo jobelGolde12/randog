@@ -6,7 +6,7 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={{ uri: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=800&q=80' }}
+        source={require('../../assets/images/welcome_image.jpeg')}
         style={styles.heroImage}
         resizeMode="cover"
       />
@@ -26,34 +26,39 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   heroImage: {
-    width: 300,
-    height: 250,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+    top: '-8%',
+    width: '100%', 
+    height: '50%',
+    borderTopLeftRadius: 0, 
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 50, 
+    borderBottomRightRadius: 50, 
   },
   content: {
-    backgroundColor: '#fff',
+    top: '-5%',
+    backgroundColor: 'transparent',
     width: 300,
+    height: 'auto',
     alignItems: 'center',
     paddingVertical: 24,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
   },
   title: {
-    fontSize: 24,
+    color: '#333',
+    fontSize: 45,
     fontWeight: 'bold',
     marginBottom: 8,
+    paddingTop: 10
   },
   subtitle: {
     textAlign: 'center',
-    color: '#555',
+    color: '#333',
     fontSize: 14,
     marginBottom: 20,
   },
