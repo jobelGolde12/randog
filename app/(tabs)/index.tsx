@@ -1,8 +1,14 @@
 import { Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-
+import { router, useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
+  // const handleGetStarted = () => {
+  //   navigation.navigate('SignUp');
+  // };
   return (
     <ThemedView style={styles.container}>
       <Image
@@ -15,7 +21,7 @@ export default function HomeScreen() {
         <ThemedText style={styles.subtitle}>
           Discover the Cutest Gallery of{'\n'}Random Dog Images
         </ThemedText>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./Signup')}>
           <Text style={styles.buttonText}>Get started</Text>
         </TouchableOpacity>
       </ThemedView>
@@ -31,16 +37,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heroImage: {
-    top: '-8%',
+    top: '-11%',
     width: '100%', 
-    height: '50%',
+    height: '60%',
     borderTopLeftRadius: 0, 
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 50, 
     borderBottomRightRadius: 50, 
   },
   content: {
-    top: '-5%',
+    top: '-10%',
     backgroundColor: 'transparent',
     width: 300,
     height: 'auto',
