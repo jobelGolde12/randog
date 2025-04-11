@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router, useNavigation } from 'expo-router';
 import {
   View,
   Text,
@@ -104,7 +105,7 @@ export default function SignUpScreen() {
         </TouchableOpacity>
 
         <Text style={styles.footerText}>
-          Already have an account? <Text style={styles.link}>Sign In</Text>
+          Already have an account? <Text style={styles.link} onPress={() => router.push('./Login')}>Sign In</Text>
         </Text>
       </View>
     </View>
@@ -156,10 +157,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 50,
     marginTop: 10,
+    width: '100%',
+    textAlign: 'center'
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center'
   },
   footerText: {
     marginTop: 16,
