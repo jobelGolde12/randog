@@ -1,10 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-export default function DogDetailScreen({ route, navigation }: any) {
-  const { breed } = route.params;
+export default function DogDetailScreen() {
+  const router = useRouter();
+  const { dog } = useLocalSearchParams();
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  if (!dog) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>No dog data passed.</Text>
+      </View>
+    );
+  }
+
+  let dogData;
+  try {
+    dogData = JSON.parse(dog as string);
+  } catch (e) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>Invalid dog data.</Text>
+      </View>
+    );
+  }
+
+  const breed = dogData.breed;
 
   useEffect(() => {
     fetch(`https://dog.ceo/api/breed/${breed}/images/random/5`)
@@ -21,18 +52,22 @@ export default function DogDetailScreen({ route, navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.back}>&lt; Back</Text>
       </TouchableOpacity>
-
-      <Text style={styles.title}>{breed.charAt(0).toUpperCase() + breed.slice(1)}</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <>
           <Image source={{ uri: images[0] }} style={styles.mainImage} />
-          <Text style={styles.subTitle}>Related Breeds</Text>
+            <View >
+            <Text style={styles.title}>
+                {breed.charAt(0).toUpperCase() + breed.slice(1)}
+            </Text>
+            </View>
+
+          <Text style={styles.subTitle}>More {breed} photos</Text>
           <FlatList
             horizontal
             data={images.slice(1)}
@@ -52,7 +87,9 @@ export default function DogDetailScreen({ route, navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  back: { fontSize: 16, color: '#007bff', marginBottom: 10 },
+  back: { fontSize: 20, color: '#333', marginBottom: 10,
+    paddingTop: 20,
+   },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   subTitle: { fontSize: 18, fontWeight: '600', marginVertical: 10 },
   mainImage: {
@@ -74,5 +111,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textTransform: 'capitalize',
     fontWeight: '600',
+  },
+  error: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 40,
   },
 });
