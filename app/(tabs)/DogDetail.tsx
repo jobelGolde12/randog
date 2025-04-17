@@ -35,14 +35,14 @@ export default function DogDetailScreen() {
     );
   }
 
-  const breed = dogData.breed;
-
+  const { breed, url } = dogData;
   useEffect(() => {
     fetch(`https://dog.ceo/api/breed/${breed}/images/random/5`)
       .then(res => res.json())
       .then(data => {
         setImages(data.message || []);
         setLoading(false);
+        console.log("the data is => " , data)
       })
       .catch(err => {
         console.error('Failed to fetch breed data:', err);
@@ -50,35 +50,46 @@ export default function DogDetailScreen() {
       });
   }, [breed]);
 
+  const back = () => {
+    router.push('./Gallery');
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
+      <TouchableOpacity onPress={back}>
         <Text style={styles.back}>&lt; Back</Text>
       </TouchableOpacity>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
+      {/* Main Image from the passed dog data */}
+      <View style={styles.mainImageWrapper}>
+        {loading ? (
+          <>
+            <View style={styles.imagePlaceholder} />
+            <ActivityIndicator style={styles.spinnerOverlay} size="large" color="#000" />
+          </>
+        ) : (
+          <Image source={{ uri: url }} style={styles.mainImage} />
+        )}
+      </View>
+
+      {!loading && (
         <>
-          <Image source={{ uri: images[0] }} style={styles.mainImage} />
-            <View >
-            <Text style={styles.title}>
-                {breed.charAt(0).toUpperCase() + breed.slice(1)}
-            </Text>
-            </View>
+          <Text style={styles.title}>
+            {breed.charAt(0).toUpperCase() + breed.slice(1)}
+          </Text>
 
           <Text style={styles.subTitle}>More {breed} photos</Text>
           <FlatList
-            horizontal
-            data={images.slice(1)}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({ item }) => (
-              <View style={styles.relatedCard}>
-                <Image source={{ uri: item }} style={styles.relatedImage} />
-                <Text style={styles.caption}>{breed}</Text>
-              </View>
-            )}
-          />
+  horizontal
+  data={images}
+  keyExtractor={(item, index) => item + index}
+  renderItem={({ item, index }) => (
+    <View style={styles.relatedCard}>
+      <Image source={{ uri: item }} style={styles.relatedImage} />
+      <Text style={styles.caption}>#{index + 1} {breed}</Text>
+    </View>
+  )}
+/>
         </>
       )}
     </View>
@@ -87,20 +98,36 @@ export default function DogDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  back: { fontSize: 20, color: '#333', marginBottom: 10,
-    paddingTop: 20,
-   },
+  back: { fontSize: 20, color: '#333', marginBottom: 10, paddingTop: 20 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   subTitle: { fontSize: 18, fontWeight: '600', marginVertical: 10 },
-  mainImage: {
+  mainImageWrapper: {
+    position: 'relative',
     width: '100%',
     height: 250,
-    borderRadius: 16,
     marginBottom: 20,
+  },
+  imagePlaceholder: {
+    backgroundColor: '#ccc',
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
+  },
+  spinnerOverlay: {
+    position: 'absolute',
+    top: '45%',
+    left: '45%',
+  },
+  mainImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
   },
   relatedCard: {
     marginRight: 10,
     alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
   },
   relatedImage: {
     width: 120,

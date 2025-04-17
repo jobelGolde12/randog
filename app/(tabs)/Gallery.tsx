@@ -87,6 +87,7 @@ export default function GalleryScreen() {
   }, [activeCategory]);
 
   const handleDogPress = (dog: DogImage) => {
+    console.log("dog => ", dog)
     router.push({
       pathname: '/DogDetail',
       params: { dog: JSON.stringify(dog) },
@@ -106,7 +107,7 @@ export default function GalleryScreen() {
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={{ uri: 'data:image/png;base64,...' }}
+            source={{ uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAACUCAMAAAAAoYNxAAAAM1BMVEXk5ueutLfp6uu/xMarsbTZ3N3h4+Sxt7q6v8Ld4OHIzM7V2Nq3vL/P0tTFycvS1delrLCbz0J0AAAEK0lEQVR4nO2c2ZLjIAxFjdgNXv7/awe7kx4nkwUQkUiN70s6/XRKdREgpAzDqVOnTp06derUqVOnTp069T8IYDA+TNO0aJP+7l5GT7NQ66o2pQ8rF8/N9EIwhNElUnFU+upG3Wm0IUR7x3ultk73yKztI9xf7NgbNHj5CnhjXmffFfT0MsTXQE8dMb8L8RVa9sLsHy66h8y2j4wXbCbwztzDKtQFxHuc2Zl9ril+xe2NcmJhDSuxicXEQjlW5Lk8yIl5ZLTzVEMsxLqwEVcY+SIuYnC1yGrmsQYs1UEWIrAgD7EeWUmWTDfVxzgxaw7kaifvyI7BzQFDnBIdvTPq08UlzAxnZxxxOmpQA8OyIpHFQhxmqDgP3YrcGaboYP8QORIfnAOWOJmZdgeEEY+saM9zkFkGeIk8kiIbZFbekSUpskcnjKRIilxWCXgm0j37C5Eb5LhkZtLEjDzGcSBj7lB/kUmP+V+I/IXGaLP8ziRHgExbAvUOT0xdAW1xkptJiaGqSnuHPNEio0pFF2TiupzHI0fiGhfgr6vU7w8NzEz+/ODRpRfy2ifaGZG8JgeVTztXrdT1rSSPC7PieC1BLUDiIsZFqKMRz6swJs/xBHkYTD1yZHp6r08aiiFdXJgrK3OcPUZ1iU6RP5McVGcNnmfKX+axnFkxt8uVZzqu/HZQ4S1wZeprqGcmvqM+UZE3ONuKDkp318yeT8HXVHQnCBmNtXsPMzfpQckc76BVL6a4CoJ7Ca2E42/2vBMMwa3PoJWSYeiNeJd+HOkEzN2a+lwAi4tWqJ9Jjf3DWrf0GeCrALZhGCndJinn6TsmePaJoyRjhm/A/Uf9Mu+R1WEZZ7m5+WrnGJ0cp6C1Nz3BJ1ofkn/dz7pT9+li/1+Uclx0F0ZJDGGOdqN9s/kpZa2Vk+em1qN9un88Jl/TrmJ4SgIAPoyPJ88yqCdNbm0ALWMN74VaWTcZSmgYpph5RH5OLYSkg/ZjfXxvqNdkawLq5AhsgA/Qyk2fNjUYmXUByYcWH54CNLKNJW6p7cfuV2Byr6WlWuVnbizbVekjwGIL9Nh+UwRouOoeKTYP9OuR5RZSY9NtPLu4gmJuurU06L7IYW43Xu4Rk0VlzI26sDOrV42gW1SUQBPY+MjcIMaEvDsztmSOmumrZcYRa2pggYwzeMKVd2BGrEFDld3uVf9e/Llz0DtVHkdrniEbqfLJGDQbcfXDPB+wqGt/gJkVWVSM1nFk5KMqdu4GDcpI5tIwB3R/JBq5cFIbWLa9W61FYQbNHuTSRIef/22ikjA36AFvoYIjXYth2gZSBQ2ALSZTmyh/wKDNOBFeBdsJspu6mZTLdYahqbRkKHtWreYnnz6jNdfMiCbfxso2cw9b30W554xeVl+SzUSef34LtQetuVGW3Sh7jgr6US5y3/oDD+I6UeymLPkAAAAASUVORK5CYII=' }}
             style={styles.avatar}
           />
           <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 16 }}>{userName}</Text>
