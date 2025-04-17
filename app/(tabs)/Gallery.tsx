@@ -87,7 +87,6 @@ export default function GalleryScreen() {
   }, [activeCategory]);
 
   const handleDogPress = (dog: DogImage) => {
-    console.log("dog => ", dog)
     router.push({
       pathname: '/DogDetail',
       params: { dog: JSON.stringify(dog) },
