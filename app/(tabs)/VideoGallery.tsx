@@ -14,51 +14,43 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 
-const DOG_API = 'https://dog.ceo/api';
+const DOG_API = 'https://random.dog'; // Updated to random.dog API
 const BREEDS = ['all', 'beagle', 'boxer', 'poodle'];
 
-interface DogImage {
+interface DogVideo {
   url: string;
   breed: string;
 }
 
 export default function GalleryScreen() {
-  const [images, setImages] = useState<DogImage[]>([]);
+  const [videos, setVideos] = useState<DogVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [userName, setUserName] = useState('');
   const navigation = useNavigation();
 
-  const fetchImagesByCategory = async (category: string) => {
+  const fetchVideosByCategory = async (category: string) => {
     try {
       setLoading(true);
+      // If "all" category is selected, fetch 10 random dog videos, else fetch breed-specific
       const endpoint =
-        category === 'all' ? '/breeds/image/random/10' : `/breed/${category}/images/random/10`;
+        category === 'all' ? '/woof.json?filter=mp4' : `/woof.json?filter=mp4&breed=${category}`;
       const res = await fetch(`${DOG_API}${endpoint}`);
       const data = await res.json();
-      const imageList: DogImage[] = (data.message || []).map((url: string) => ({
-        url,
-        breed: category === 'all' ? getBreedFromUrl(url) : category,
+
+      // Simulate that each video is categorized with a breed
+      const videoList: DogVideo[] = (Array.isArray(data) ? data : [data]).map((video: any) => ({
+        url: video.url,
+        breed: category === 'all' ? 'Mixed' : category,
       }));
-      setImages(imageList);
+
+      setVideos(videoList);
     } catch (error) {
-      console.error('Failed fetching images:', error);
+      console.error('Failed fetching videos:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const getBreedFromUrl = (url: string): string => {
-    const match = url.match(/breeds\/([a-zA-Z-]+)\//);
-    if (match && match[1]) {
-      const breedSlug = match[1];
-      const parts = breedSlug.split('-');
-      return parts.length > 1
-        ? `${parts[1]} ${parts[0]}`
-        : parts[0];
-    }
-    return 'Unknown';
   };
 
   const loadUserName = async () => {
@@ -82,47 +74,43 @@ export default function GalleryScreen() {
   };
 
   useEffect(() => {
-    fetchImagesByCategory(activeCategory);
+    fetchVideosByCategory(activeCategory);
     loadUserName();
   }, [activeCategory]);
 
-  const handleDogPress = (dog: DogImage) => {
+  const handleVideoPress = (video: DogVideo) => {
+    console.log('dog video => ', video);
     router.push({
-      pathname: '/DogDetail',
-      params: { dog: JSON.stringify(dog) },
+      pathname: '/VideoDetail',
+      params: { video: JSON.stringify(video) },
     });
   };
 
-  const renderImage = ({ item }: { item: DogImage }) => (
-    <TouchableOpacity style={styles.imageCard} onPress={() => handleDogPress(item)}>
-      <Image source={{ uri: item.url }} style={styles.image} />
+  const renderVideo = ({ item }: { item: DogVideo }) => (
+    <TouchableOpacity style={styles.videoCard} onPress={() => handleVideoPress(item)}>
+      <Image source={{ uri: item.url }} style={styles.videoThumbnail} />
       <Text style={styles.caption}>{item.breed}</Text>
     </TouchableOpacity>
   );
-  const video = () => {
-    router.push('./VideoGallery');
-  };
-  const home = () => {
-    router.push('./Gallery');
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={{ uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAACUCAMAAAAAoYNxAAAAM1BMVEXk5ueutLfp6uu/xMarsbTZ3N3h4+Sxt7q6v8Ld4OHIzM7V2Nq3vL/P0tTFycvS1delrLCbz0J0AAAEK0lEQVR4nO2c2ZLjIAxFjdgNXv7/awe7kx4nkwUQkUiN70s6/XRKdREgpAzDqVOnTp06derUqVOnTp069T8IYDA+TNO0aJP+7l5GT7NQ66o2pQ8rF8/N9EIwhNElUnFU+upG3Wm0IUR7x3ultk73yKztI9xf7NgbNHj5CnhjXmffFfT0MsTXQE8dMb8L8RVa9sLsHy66h8y2j4wXbCbwztzDKtQFxHuc2Zl9ril+xe2NcmJhDSuxicXEQjlW5Lk8yIl5ZLTzVEMsxLqwEVcY+SIuYnC1yGrmsQYs1UEWIrAgD7EeWUmWTDfVxzgxaw7kaifvyI7BzQFDnBIdvTPq08UlzAxnZxxxOmpQA8OyIpHFQhxmqDgP3YrcGaboYP8QORIfnAOWOJmZdgeEEY+saM9zkFkGeIk8kiIbZFbekSUpskcnjKRIilxWCXgm0j37C5Eb5LhkZtLEjDzGcSBj7lB/kUmP+V+I/IXGaLP8ziRHgExbAvUOT0xdAW1xkptJiaGqSnuHPNEio0pFF2TiupzHI0fiGhfgr6vU7w8NzEz+/ODRpRfy2ifaGZG8JgeVTztXrdT1rSSPC7PieC1BLUDiIsZFqKMRz6swJs/xBHkYTD1yZHp6r08aiiFdXJgrK3OcPUZ1iU6RP5McVGcNnmfKX+axnFkxt8uVZzqu/HZQ4S1wZeprqGcmvqM+UZE3ONuKDkp318yeT8HXVHQnCBmNtXsPMzfpQckc76BVL6a4CoJ7Ca2E42/2vBMMwa3PoJWSYeiNeJd+HOkEzN2a+lwAi4tWqJ9Jjf3DWrf0GeCrALZhGCndJinn6TsmePaJoyRjhm/A/Uf9Mu+R1WEZZ7m5+WrnGJ0cp6C1Nz3BJ1ofkn/dz7pT9+li/1+Uclx0F0ZJDGGOdqN9s/kpZa2Vk+em1qN9un88Jl/TrmJ4SgIAPoyPJ88yqCdNbm0ALWMN74VaWTcZSmgYpph5RH5OLYSkg/ZjfXxvqNdkawLq5AhsgA/Qyk2fNjUYmXUByYcWH54CNLKNJW6p7cfuV2Byr6WlWuVnbizbVekjwGIL9Nh+UwRouOoeKTYP9OuR5RZSY9NtPLu4gmJuurU06L7IYW43Xu4Rk0VlzI26sDOrV42gW1SUQBPY+MjcIMaEvDsztmSOmumrZcYRa2pggYwzeMKVd2BGrEFDld3uVf9e/Llz0DtVHkdrniEbqfLJGDQbcfXDPB+wqGt/gJkVWVSM1nFk5KMqdu4GDcpI5tIwB3R/JBq5cFIbWLa9W61FYQbNHuTSRIef/22ikjA36AFvoYIjXYth2gZSBQ2ALSZTmyh/wKDNOBFeBdsJspu6mZTLdYahqbRkKHtWreYnnz6jNdfMiCbfxso2cw9b30W554xeVl+SzUSef34LtQetuVGW3Sh7jgr6US5y3/oDD+I6UeymLPkAAAAASUVORK5CYII=' }}
+            source={{ uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' }}
             style={styles.avatar}
           />
-          <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 16 }}>{userName}</Text>
+          <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 16 }}>
+            {userName || 'Christine'}
+          </Text>
         </View>
         <TouchableOpacity onPress={() => setSidebarVisible(true)}>
           <Text style={styles.menu}>☰</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Gallery</Text>
+      <Text style={styles.title}>Videos</Text>
 
       <View style={styles.filters}>
         {BREEDS.map((breed) => (
@@ -141,18 +129,19 @@ export default function GalleryScreen() {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#000" />
-          <Text style={{ marginTop: 10 }}>Fetching cute dogs...</Text>
+          <Text style={{ marginTop: 10 }}>Fetching cute dog videos...</Text>
         </View>
       ) : (
         <FlatList
-          data={images}
+          data={videos}
           numColumns={2}
-          renderItem={renderImage}
+          renderItem={renderVideo}
           keyExtractor={(item, index) => `${item.url}-${index}`}
           contentContainerStyle={styles.gallery}
         />
       )}
 
+      {/* Sidebar Menu */}
       <Modal
         visible={sidebarVisible}
         animationType="slide"
@@ -162,11 +151,11 @@ export default function GalleryScreen() {
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} onPress={() => setSidebarVisible(false)} />
           <View style={styles.sidebar}>
-            <TouchableOpacity style={styles.sidebarItem} onPress={home}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <Text style={styles.sidebarIcon}>🏠</Text>
               <Text style={styles.sidebarText}>Home</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.sidebarItem} onPress={video}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <Text style={styles.sidebarIcon}>🎥</Text>
               <Text style={styles.sidebarText}>Videos</Text>
             </TouchableOpacity>
@@ -188,29 +177,46 @@ const styles = StyleSheet.create({
   },
   avatar: { width: 40, height: 40, borderRadius: 20 },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
     textAlign: 'center',
     marginBottom: 10,
   },
   menu: { fontSize: 24, fontWeight: 'bold' },
-  filters: { flexDirection: 'row', paddingHorizontal: 20, marginBottom: 10 },
+  filters: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 10,
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   filterButton: {
     backgroundColor: '#eee',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     marginRight: 10,
+    marginBottom: 5,
   },
   activeFilter: { backgroundColor: '#000' },
   filterText: { color: '#333' },
   activeFilterText: { color: '#fff' },
   gallery: { paddingHorizontal: 10, paddingBottom: 20 },
-  imageCard: { flex: 1, margin: 8, alignItems: 'center' },
-  image: { width: '100%', aspectRatio: 1, borderRadius: 12 },
+  videoCard: {
+    flex: 1,
+    margin: 8,
+    alignItems: 'center',
+  },
+  videoThumbnail: {
+    width: '100%',
+    aspectRatio: 1.5, // slightly wider for a "video" feel
+    borderRadius: 10,
+    backgroundColor: '#ddd',
+  },
   caption: {
     marginTop: 4,
     fontWeight: 'bold',
+    fontSize: 14,
     textTransform: 'capitalize',
   },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
