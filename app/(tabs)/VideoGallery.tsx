@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 
 const DOG_API = 'https://random.dog';
@@ -27,8 +27,8 @@ interface DogVideo {
 export default function GalleryScreen() {
   const [userName, setUserName] = useState('');
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const navigation = useNavigation();
-
+  // const navigation = useNavigation();
+ 
   const loadUserName = async () => {
     try {
       const storedData = await AsyncStorage.getItem('userData');
@@ -52,6 +52,14 @@ export default function GalleryScreen() {
   useEffect(() => {
     loadUserName();
   }, []);
+
+    const video = () => {
+      router.push('./VideoGallery');
+    };
+    const home = () => {
+      router.push('./Gallery');
+    };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,11 +116,11 @@ export default function GalleryScreen() {
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} onPress={() => setSidebarVisible(false)} />
           <View style={styles.sidebar}>
-            <TouchableOpacity style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem} onPress={home}>
               <Text style={styles.sidebarIcon}>🏠</Text>
               <Text style={styles.sidebarText}>Home</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem} onPress={video}>
               <Text style={styles.sidebarIcon}>🎥</Text>
               <Text style={styles.sidebarText}>Videos</Text>
             </TouchableOpacity>
