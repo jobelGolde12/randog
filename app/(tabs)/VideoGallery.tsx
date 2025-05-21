@@ -10,25 +10,25 @@ import {
   SafeAreaView,
   FlatList,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 
-const DOG_API = 'https://random.dog';
-const BREEDS = ['all'];
-
-interface DogVideo {
-  url: string;
-  breed: string;
-}
+const videoUrls = [
+  'https://www.youtube.com/embed/rChxzvFdp4c',
+  'https://www.youtube.com/embed/pbA36Qg_of4',
+  'https://www.youtube.com/embed/ul8izGUdmzU',
+  'https://www.youtube.com/embed/tBwr8oIwTuE',
+  'https://www.youtube.com/embed/nF-PTvbXYHA',
+  'https://www.youtube.com/embed/Sg_4Rz4-xhc',
+  'https://www.youtube.com/embed/SJIV7KjXW0s',
+  'https://www.youtube.com/embed/YHOYDjJ1ta4',
+];
 
 export default function GalleryScreen() {
   const [userName, setUserName] = useState('');
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  // const navigation = useNavigation();
- 
+
   const loadUserName = async () => {
     try {
       const storedData = await AsyncStorage.getItem('userData');
@@ -53,25 +53,36 @@ export default function GalleryScreen() {
     loadUserName();
   }, []);
 
-    const video = () => {
-      router.push('./VideoGallery');
-    };
-    const home = () => {
-      router.push('./Gallery');
-    };
-  
+  const video = () => router.push('./VideoGallery');
+  const home = () => router.push('./Gallery');
+
+  const renderVideo = ({ item }: { item: string }) => (
+    <View style={styles.videoWrapper}>
+      <WebView
+        source={{ uri: item }}
+        style={styles.webview}
+        javaScriptEnabled
+        domStorageEnabled
+        allowsFullscreenVideo
+        mediaPlaybackRequiresUserAction={false}
+        startInLoadingState={true}
+      />
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Fixed Header */}
+      {/* Header */}
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={{ uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' }}
+            source={{
+              uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            }}
             style={styles.avatar}
           />
           <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 16 }}>
-            {userName || 'user'}
+            {userName || 'User'}
           </Text>
         </View>
         <TouchableOpacity onPress={() => setSidebarVisible(true)}>
@@ -79,32 +90,21 @@ export default function GalleryScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Fixed Title */}
+      {/* Title */}
       <Text style={styles.title}>Videos</Text>
-      {/* Scrollable Videos */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-  {[
-    'https://www.youtube.com/embed/rChxzvFdp4c',
-    'https://www.youtube.com/embed/pbA36Qg_of4',
-    'https://www.youtube.com/embed/ul8izGUdmzU',
-    'https://www.youtube.com/embed/tBwr8oIwTuE',
-    'https://www.youtube.com/embed/nF-PTvbXYHA',
-    'https://www.youtube.com/embed/Sg_4Rz4-xhc',
-    'https://www.youtube.com/embed/SJIV7KjXW0s',
-    'https://www.youtube.com/embed/YHOYDjJ1ta4',
-  ].map((url, index) => (
-    <View style={styles.videoWrapper} key={index}>
-      <WebView
-        source={{ uri: url }}
-        style={styles.webview}
-        allowsFullscreenVideo
-        javaScriptEnabled
-        domStorageEnabled
-      />
-    </View>
-  ))}
-</ScrollView>
 
+      {/* Debug Fallback */}
+      <Text style={{ textAlign: 'center', color: 'gray', marginVertical: 5 }}>
+        If you see nothing, the WebViews may be blocked or misconfigured
+      </Text>
+
+      {/* Video List */}
+      <FlatList
+        data={videoUrls}
+        renderItem={renderVideo}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
 
       {/* Sidebar */}
       <Modal
@@ -160,22 +160,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     backgroundColor: '#fff',
-    zIndex: 9,
   },
   scrollContainer: {
     paddingBottom: 20,
     alignItems: 'center',
   },
   videoWrapper: {
-    width: '90%',
+    width: Dimensions.get('window').width * 0.9,
     height: 240,
     marginVertical: 10,
     borderRadius: 10,
     overflow: 'hidden',
+    backgroundColor: '#000', // helps visualize when WebView doesn't load
   },
   webview: {
     flex: 1,
-    borderRadius: 10,
   },
   sidebar: {
     position: 'absolute',

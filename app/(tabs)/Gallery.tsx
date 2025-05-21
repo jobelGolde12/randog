@@ -192,10 +192,10 @@ export default function GalleryScreen() {
               <Text style={styles.sidebarIcon}>🏠</Text>
               <Text style={styles.sidebarText}>Home</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.sidebarItem} onPress={video}>
+            {/* <TouchableOpacity style={styles.sidebarItem} onPress={video}>
               <Text style={styles.sidebarIcon}>🎥</Text>
               <Text style={styles.sidebarText}>Videos</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
